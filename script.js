@@ -2,10 +2,17 @@ const canvas = document.getElementById("canvas");
 const scoreElem = document.getElementById("score");
 const highestScoreElem = document.getElementById("highest");
 
-let movementX = 0;
-let movementY = 0;
-let snakePositionX = 8;
-let snakePositionY = 8;
+let snake, score, movementX, movementY, snakePositionX, snakePositionY;
+
+function reset() {
+  snake = [];
+  score = 0;
+  movementX = 0;
+  movementY = 0;
+  snakePositionX = 8;
+  snakePositionY = 8;
+}
+reset();
 
 function getRandomPosition() {
   return Array(2)
@@ -22,6 +29,7 @@ function resetApple() {
 }
 while (applePositionX === snakePositionX && applePositionY === snakePositionY) {
   resetApple();
+  score++;
 }
 
 let gameLoopId;
@@ -70,27 +78,43 @@ function move(key) {
 function gameOver() {
   alert("You died... GG!");
   clearInterval(gameLoopId);
-
-  movementX = 0;
-  movementY = 0;
-  snakePositionX = 8;
-  snakePositionY = 8;
+  const highest = localStorage.getItem("highest") || 0;
+  localStorage.setItem("highest", score > highest ? score : highest);
+  reset();
   gameLoop();
 }
+
 function game() {
-  let highest = localStorage.getItem("highest") || 0;
+  const highest = localStorage.getItem("highest") || 0;
   highestScoreElem.innerText = `Highest: ${highest}`;
+  scoreElem.innerText = `Score: ${score}`;
 
   snakePositionX += movementX;
   snakePositionY += movementY;
-  let html;
+  let html = "";
 
   if (snakePositionX === applePositionX && snakePositionY === applePositionY) {
     resetApple();
-  }
-  html += `<div class="apple" style="grid-area: ${applePositionY} / ${applePositionX}"></div>`;
+    score++;
+    scoreElem.innerText = `Score: ${score}`;
 
-  html += `<div class="snake" style="grid-area: ${snakePositionY} / ${snakePositionX}"></div>`;
+    snake.push([applePositionX, applePositionY]);
+  }
+
+  for (let i = snake.length - 1; i > 0; i--) {
+    snake[i] = snake[i - 1];
+  }
+
+  snake[0] = [snakePositionX, snakePositionY];
+
+  for (let i = 0; i < snake.length; i++) {
+    html += `<div class="snake" style="grid-area: ${snake[i][1]} / ${snake[i][0]}"></div>`;
+    if (i !== 0 && snake[0][1] === snake[i][1] && snake[0][0] === snake[i][0]) {
+      gameOver();
+    }
+  }
+
+  html += `<div class="apple" style="grid-area: ${applePositionY} / ${applePositionX}"></div>`;
 
   if (
     snakePositionX < 1 ||
@@ -102,5 +126,4 @@ function game() {
   }
   canvas.innerHTML = html;
 }
-
 gameLoop();
