@@ -1,22 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
 
-    <title>🐍 Vim Snake</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Ysabeau+Office:wght@400;700;900&display=swap"
-      rel="stylesheet"
-    />
+  <title>🐍 Vim Snake</title>
 
-    <script src="script.js" defer></script>
-  </head>
-  <body>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <main class="main">
+    <h1 class="title">🐍 Vim Snake</h1>
+    <h3 class="description">Master Vim Motions with a spark of fun!</h3>
     <div class="container">
       <div id="score-bar" class="score-bar">
         <span id="score" class="score">Score: 0</span>
@@ -24,5 +26,13 @@
       </div>
       <div id="canvas" class="canvas"></div>
     </div>
-  </body>
+    <div class="controls">
+      <span class="control-element">
+        <label for="arrow-keys-toggle">Allow Arrow Keys?</label>
+        <input type="checkbox" class="arrow-keys-toggle" id='arrow-keys-toggle'></input>
+      </span>
+    </div>
+  </main>
+</body>
+
 </html>

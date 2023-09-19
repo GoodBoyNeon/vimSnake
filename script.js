@@ -14,6 +14,9 @@ function reset() {
 }
 reset();
 
+/*
+ * @returns {number[]}
+ */
 function getRandomPosition() {
   return Array(2)
     .fill(0)
@@ -27,6 +30,7 @@ function resetApple() {
   applePositionX = x;
   applePositionY = y;
 }
+
 while (applePositionX === snakePositionX && applePositionY === snakePositionY) {
   resetApple();
   score++;
@@ -34,45 +38,62 @@ while (applePositionX === snakePositionX && applePositionY === snakePositionY) {
 
 let gameLoopId;
 
-const controls = {
-  up: "k",
-  down: "j",
-  left: "h",
-  right: "l",
-};
-
 document.addEventListener("keydown", (e) => {
   const { key } = e;
+  console.log(key);
 
-  const validKeys = Object.values(controls);
-  if (!validKeys.includes(key)) return;
-
-  move(key);
+  const allowArrowKeys = document.getElementById("arrow-keys-toggle").checked;
+  move(key, allowArrowKeys);
 });
 
 function gameLoop() {
   gameLoopId = setInterval(game, 1000 / 8);
 }
 
-function move(key) {
-  switch (key) {
-    case "h":
-      movementX = -1;
-      movementY = 0;
-      break;
-    case "j":
-      movementX = 0;
-      movementY = 1;
-      break;
-    case "k":
-      movementX = 0;
-      movementY = -1;
-      break;
-    case "l":
-      movementX = 1;
-      movementY = 0;
-      break;
+/**
+ * @param {string} key
+ * @param {boolean} allowArrowKeys
+ */
+function move(key, allowArrowKeys) {
+  const keyTable = new Map();
+  keyTable.set("h", "left");
+  keyTable.set("j", "down");
+  keyTable.set("k", "up");
+  keyTable.set("l", "right");
+
+  if (allowArrowKeys) {
+    keyTable.set("ArrowLeft", "left");
+    keyTable.set("ArrowDown", "down");
+    keyTable.set("ArrowUp", "up");
+    keyTable.set("ArrowRight", "right");
   }
+
+  const actionsTable = new Map();
+
+  actionsTable.set("left", () => {
+    if (movementX === 1) return;
+    movementX = -1;
+    movementY = 0;
+  });
+  actionsTable.set("up", () => {
+    if (movementY === 1) return;
+    movementX = 0;
+    movementY = -1;
+  });
+  actionsTable.set("down", () => {
+    if (movementY === -1) return;
+    movementX = 0;
+    movementY = 1;
+  });
+  actionsTable.set("right", () => {
+    if (movementX === -1) return;
+    movementX = 1;
+    movementY = 0;
+  });
+
+  const action = keyTable.get(key);
+  if (!action) return;
+  actionsTable.get(action)();
 }
 
 function gameOver() {
@@ -91,6 +112,7 @@ function game() {
 
   snakePositionX += movementX;
   snakePositionY += movementY;
+
   let html = "";
 
   if (snakePositionX === applePositionX && snakePositionY === applePositionY) {
@@ -107,14 +129,16 @@ function game() {
 
   snake[0] = [snakePositionX, snakePositionY];
 
-  for (let i = 0; i < snake.length; i++) {
+  html += `<div class="snake-head" style="grid-area: ${snake[0][1]} / ${snake[0][0]}"></div>`;
+  for (let i = 1; i < snake.length; i++) {
     html += `<div class="snake" style="grid-area: ${snake[i][1]} / ${snake[i][0]}"></div>`;
     if (i !== 0 && snake[0][1] === snake[i][1] && snake[0][0] === snake[i][0]) {
       gameOver();
     }
   }
 
-  html += `<div class="apple" style="grid-area: ${applePositionY} / ${applePositionX}"></div>`;
+  // html += `<div class="apple" style="grid-area: ${applePositionY} / ${applePositionX}"></div>`;
+  html += `<img src="img/apple.png" class="apple" style="grid-area: ${applePositionY} / ${applePositionX}"></div>`;
 
   if (
     snakePositionX < 1 ||
@@ -126,4 +150,5 @@ function game() {
   }
   canvas.innerHTML = html;
 }
+
 gameLoop();
